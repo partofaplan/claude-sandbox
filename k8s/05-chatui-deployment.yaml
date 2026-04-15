@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatui
+  namespace: chat
+  labels:
+    app: chatui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatui
+  template:
+    metadata:
+      labels:
+        app: chatui
+    spec:
+      containers:
+        - name: chatui
+          image: chatui:latest
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: OLLAMA_URL
+              value: "http://ollama:11434"
+            - name: OLLAMA_MODEL
+              value: "llama3.2:3b"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
