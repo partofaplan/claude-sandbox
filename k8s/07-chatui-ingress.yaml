@@ -8,7 +8,8 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - http:
+    - host: chatbot.local
+      http:
         paths:
           - path: /
             pathType: Prefix
